@@ -1,0 +1,4 @@
+../Core/Src/Drivers/littlefs_driver.c:85:5:lfs_read_flash	16	static
+../Core/Src/Drivers/littlefs_driver.c:95:5:lfs_prog_flash	16	static
+../Core/Src/Drivers/littlefs_driver.c:105:5:lfs_erase_sector_flash	16	static
+../Core/Src/Drivers/littlefs_driver.c:115:5:lfs_sync_flash	0	static,ignoring_inline_asm

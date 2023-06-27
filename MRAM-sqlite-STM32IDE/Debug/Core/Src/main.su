@@ -1,0 +1,6 @@
+../Core/Src/main.c:90:5:__io_putchar	0	static,ignoring_inline_asm
+../Core/Src/main.c:96:5:_write	4	static,ignoring_inline_asm
+../Core/Src/main.c:107:6:MPU_RegionConfig	24	static
+../Core/Src/main.c:196:6:SystemClock_Config	136	static,ignoring_inline_asm
+../Core/Src/main.c:136:5:main	104	static,ignoring_inline_asm
+../Core/Src/main.c:448:6:Error_Handler	0	static,ignoring_inline_asm

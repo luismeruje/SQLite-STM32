@@ -1,0 +1,7 @@
+../Core/Src/Drivers/flash_driver.c:22:10:erase_flash_sector	40	static
+../Core/Src/Drivers/flash_driver.c:52:19:flash_write_8bit	0	static
+../Core/Src/Drivers/flash_driver.c:58:19:flash_write_16bit	0	static
+../Core/Src/Drivers/flash_driver.c:63:30:flash_write_32bit	24	static,ignoring_inline_asm
+../Core/Src/Drivers/flash_driver.c:80:5:flush_flash	8	static,ignoring_inline_asm
+../Core/Src/Drivers/flash_driver.c:88:30:flash_write_32bit_hal_copy	32	static
+../Core/Src/Drivers/flash_driver.c:195:19:flash_write_64bit	0	static

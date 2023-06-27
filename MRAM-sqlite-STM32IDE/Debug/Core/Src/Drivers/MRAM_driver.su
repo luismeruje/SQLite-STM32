@@ -1,0 +1,13 @@
+../Core/Src/Drivers/MRAM_driver.c:9:17:mram_write_8bit_blocks	8	static
+../Core/Src/Drivers/MRAM_driver.c:20:17:mram_write_16bit_blocks	8	static
+../Core/Src/Drivers/MRAM_driver.c:31:17:mram_write_32bit_blocks	8	static
+../Core/Src/Drivers/MRAM_driver.c:41:17:mram_write_64bit_blocks	4	static
+../Core/Src/Drivers/MRAM_driver.c:51:17:mram_read_8bit_blocks	8	static
+../Core/Src/Drivers/MRAM_driver.c:62:17:mram_read_16bit_blocks	8	static
+../Core/Src/Drivers/MRAM_driver.c:73:17:mram_read_32bit_blocks	8	static
+../Core/Src/Drivers/MRAM_driver.c:83:17:mram_read_64bit_blocks	4	static
+../Core/Src/Drivers/MRAM_driver.c:94:10:compare_array_with_MRAM	40	static
+../Core/Src/Drivers/MRAM_driver.c:114:6:mram_read	8	static
+../Core/Src/Drivers/MRAM_driver.c:138:6:mram_write	8	static
+../Core/Src/Drivers/MRAM_driver.c:162:17:mram_wipe	0	static
+../Core/Src/Drivers/MRAM_driver.c:169:17:mram_wipe_bytes	8	static
