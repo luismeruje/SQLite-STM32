@@ -4,13 +4,19 @@
  *  Created on: Jun 20, 2023
  *      Author: luisferreira
  */
+//========== SETTINGS ===========
+#define OPERATIONS_PER_TRANSACTION 2
+#define NR_TRANSACTIONS 2500
+// #define STM32 1
+//===============================
+
 
 #include "bench_sqlite3.h"
 #include <stdio.h>
 #include "sqlite3.h"
 
 
-#ifdef MRAMEN
+#ifdef STM32
 #include "stm32h7xx_hal.h"
 #include "MRAM_driver.h"
 #include "lfs.h"
@@ -25,13 +31,10 @@
 #define BILLION  1000000000.0
 #endif
 
-//========== SETTINGS ===========
-#define INSERTS_PER_TRANSACTION 2
-#define NR_TRANSACTIONS 2500
-//===============================
+
 
 //Individual query max size
-#define TRANSACTION_STRING_SIZE (60 + (20*INSERTS_PER_TRANSACTION))
+#define TRANSACTION_STRING_SIZE (60 + (20*OPERATIONS_PER_TRANSACTION))
 
 void check_error(int rc, sqlite3 * db){
 	if (rc != SQLITE_OK) {
@@ -46,7 +49,7 @@ void check_error(int rc, sqlite3 * db){
 sqlite3 * sqlite_init(void * heap_buffer, uint32_t szBuf){
 	sqlite3 *db;
 	int rc;
-#ifdef MRAMEN
+#ifdef STM32
 	//Using memsys5, zero-malloc mechanism. 475KBi heap
 	//Trying to set cache on separate memory zone (RAM_D2), however I do not know if SQLITE_CONFIG_HEAP overrides this configuration
 
@@ -55,7 +58,7 @@ sqlite3 * sqlite_init(void * heap_buffer, uint32_t szBuf){
 	sqlite3_config(SQLITE_CONFIG_MMAP_SIZE,0,0);
 #endif
 
-#ifdef MRAMEN
+#ifdef STM32
 	sqlite3_open_v2("helloworld7", &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, "littlefs");
 #else
 	rc =  sqlite3_open("helloworld", &db);
@@ -111,7 +114,7 @@ void prepare_write_queries(char (* sqlQueries)[TRANSACTION_STRING_SIZE], uint32_
 	  //Create queries
 	  sprintf(sqlQueries[t], "INSERT INTO Sensor VALUES ");
 
-	  for (int i = 0; i < INSERTS_PER_TRANSACTION - 1; i++, *value += 1){
+	  for (int i = 0; i < OPERATIONS_PER_TRANSACTION - 1; i++, *value += 1){
 		  sprintf(aux, "(%u,%d,%d,%d),",*value, rand()%255,rand()%255,rand()%255);
 		  strcat(sqlQueries[t], aux);
 	  }
@@ -127,14 +130,14 @@ void prepare_read_queries(char (* sqlQueries)[TRANSACTION_STRING_SIZE], uint32_t
 
 	for(int t = 0; t < numQueries; t++){
 	  //Create queries
-	  sprintf(sqlQueries[t], "SELECT Pressure from Sensor WHERE %u <= Timestamp < %u;", INSERTS_PER_TRANSACTION * (queryOffset+t), INSERTS_PER_TRANSACTION * (1+queryOffset+t));
+	  sprintf(sqlQueries[t], "SELECT Pressure from Sensor WHERE %u <= Timestamp < %u;", OPERATIONS_PER_TRANSACTION * (queryOffset+t), OPERATIONS_PER_TRANSACTION * (1+queryOffset+t));
 	}
 
 	//printf("Example query: %s\n", sqlQueries[1]);
 }
 
 void measure_basic_throughput(sqlite3 *db){
-	#ifdef MRAMEN
+	#ifdef STM32
 	char (* sqlQueries)[TRANSACTION_STRING_SIZE] = (void *) 0x38000000;
 	#else
 	char (* sqlQueries)[TRANSACTION_STRING_SIZE] = malloc(128000);
@@ -162,7 +165,7 @@ void measure_basic_throughput(sqlite3 *db){
 			"Number transactions per batch: %u\n"
 			"Nr batches: %u\nLeftoverBatch? %s\n"
 			"Nr transactions leftover batch: %u\n",
-				INSERTS_PER_TRANSACTION,
+				OPERATIONS_PER_TRANSACTION,
 				NR_TRANSACTIONS,
 				nrTransactionsPerBatch,
 				nrBatches,
@@ -171,7 +174,7 @@ void measure_basic_throughput(sqlite3 *db){
 
 //========= INSERTION THROUGHPUT ===========
 
-#ifdef MRAMEN
+#ifdef STM32
 	int startTime = 0, elapsedTime = 0;
 #else
 	double timeSpent = 0;
@@ -180,7 +183,7 @@ void measure_basic_throughput(sqlite3 *db){
 
 	for(int batch = 0; batch < nrBatches; batch++ ){
 		prepare_write_queries(sqlQueries,&counter, nrTransactionsPerBatch);
-#ifdef MRAMEN
+#ifdef STM32
     	startTime = HAL_GetTick();
 #else
     	clock_gettime(CLOCK_REALTIME, &start);
@@ -189,7 +192,7 @@ void measure_basic_throughput(sqlite3 *db){
 			rc = sqlite3_exec(db, sqlQueries[t], 0, 0, &err_msg);
 			check_error(rc,db);
 		}
-#ifdef MRAMEN
+#ifdef STM32
     elapsedTime += HAL_GetTick() - startTime;
 #else
 	clock_gettime(CLOCK_REALTIME, &end);
@@ -200,7 +203,7 @@ void measure_basic_throughput(sqlite3 *db){
 
 	if(leftOverBatch){
 		prepare_write_queries(sqlQueries,&counter, nrTransactionsLeftoverBatch);
-#ifdef MRAMEN
+#ifdef STM32
     	startTime = HAL_GetTick();
 #else
     	clock_gettime(CLOCK_REALTIME, &start);
@@ -209,20 +212,20 @@ void measure_basic_throughput(sqlite3 *db){
 			rc = sqlite3_exec(db, sqlQueries[t], 0, 0, &err_msg);
 			check_error(rc,db);
 		}
-#ifdef MRAMEN
+#ifdef STM32
     elapsedTime += HAL_GetTick() - startTime;
-	printf("Took %u ms to insert %d records \n", elapsedTime,INSERTS_PER_TRANSACTION * NR_TRANSACTIONS)
+	printf("Took %u ms to insert %d records \n", elapsedTime,OPERATIONS_PER_TRANSACTION * NR_TRANSACTIONS)
 #else
 	clock_gettime(CLOCK_REALTIME, &end);
 	timeSpent += (end.tv_sec - start.tv_sec) +
                                 (end.tv_nsec - start.tv_nsec) / BILLION;
-	printf("Took %lf ms to insert %d records \n", timeSpent,INSERTS_PER_TRANSACTION * NR_TRANSACTIONS);
+	printf("Took %lf ms to insert %d records \n", timeSpent,OPERATIONS_PER_TRANSACTION * NR_TRANSACTIONS);
 #endif
 	}
 
 //========= READ THROUGHPUT ===========
 	sqlite3_stmt *res;
-#ifdef MRAMEN
+#ifdef STM32
 	elapsedTime = 0;
 #else
 	timeSpent = 0;
@@ -230,7 +233,7 @@ void measure_basic_throughput(sqlite3 *db){
 	int batch = 0;
 	for(batch = 0; batch < nrBatches; batch++ ){
 		prepare_read_queries(sqlQueries, nrTransactionsPerBatch,  nrTransactionsPerBatch*batch);
-#ifdef MRAMEN
+#ifdef STM32
     	startTime = HAL_GetTick();
 #else
     	clock_gettime(CLOCK_REALTIME, &start);
@@ -243,7 +246,7 @@ void measure_basic_throughput(sqlite3 *db){
 			sqlite3_finalize(res);
 			
 		}
-#if MRAMEN
+#if STM32
     	elapsedTime += HAL_GetTick() - startTime;
 #else
 		clock_gettime(CLOCK_REALTIME, &end);
@@ -255,7 +258,7 @@ void measure_basic_throughput(sqlite3 *db){
 
 	if(leftOverBatch){
 		prepare_read_queries(sqlQueries, nrTransactionsLeftoverBatch, batch*nrTransactionsPerBatch);
-#ifdef MRAMEN
+#ifdef STM32
     	startTime = HAL_GetTick();
 #else
     	clock_gettime(CLOCK_REALTIME, &start);
@@ -277,20 +280,20 @@ void measure_basic_throughput(sqlite3 *db){
 				sqlite3_finalize(res);
 			}
 		}
-#ifdef MRAMEN
+#ifdef STM32
     elapsedTime += HAL_GetTick() - startTime;
-	printf("Took %u ms to read %d records \n", elapsedTime,INSERTS_PER_TRANSACTION * NR_TRANSACTIONS)
+	printf("Took %u ms to read %d records \n", elapsedTime,OPERATIONS_PER_TRANSACTION * NR_TRANSACTIONS)
 #else
 	clock_gettime(CLOCK_REALTIME, &end);
 	timeSpent += (end.tv_sec - start.tv_sec) +
                                 (end.tv_nsec - start.tv_nsec) / BILLION;
-	printf("Took %lf ms to read %d records \n", timeSpent,INSERTS_PER_TRANSACTION * NR_TRANSACTIONS);
+	printf("Took %lf ms to read %d records \n", timeSpent,OPERATIONS_PER_TRANSACTION * NR_TRANSACTIONS);
 #endif
 	}
 
 }
 
-#ifdef MRAMEN
+#ifdef STM32
 void wipe_flash(){
 	//FIrst six sectors are occupied with code
 	erase_flash_sector(6, 1);
@@ -304,7 +307,7 @@ void wipe_flash(){
 int test_sqlite3(){
   sqlite3_stmt *res;
   int rc;
-#ifdef MRAMEN
+#ifdef STM32
   uint32_t szBuf = 500400;
   void * pBuf = malloc(szBuf);
 
@@ -350,7 +353,7 @@ int test_sqlite3(){
   drop_table(db);
   sqlite3_close(db);
    //Check which files remain
-#ifdef MRAMEN
+#ifdef STM32
   littlefs_vfs_ls("/");
   littlefs_vfs_close();
 #endif
