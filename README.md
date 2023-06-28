@@ -22,11 +22,29 @@ Then copy the file to the standalone folder, compile and run.
 The standalone folder contains the standard amalgamation of sqlite (i.e., sqlite3.c), which was not modified to run on STM32. For more details on the sqlite amalagamation check [this page]([https://www.google.com](https://www.sqlite.org/amalgamation.html)https://www.sqlite.org/amalgamation.html).
 
 ```
-cp  bench_sqlite3.c.temp SQLite-standalone/src/bench_sqlite3.c
-cp  bench_sqlite3.h.temp SQLite-standalone/src/bench_sqlite3.h
+cp bench_sqlite3.c.temp SQLite-standalone/src/bench_sqlite3.c
+cp bench_sqlite3.h.temp SQLite-standalone/inc/bench_sqlite3.h
 cd SQLite-standalone
 make
 ./sqlite3_bench
 ```
+For a successful test, the following (or a similar) output is expected:
+```
+SQLite version: 3.42.0
+Good create
+Test setup
+Inserts per transaction: 2
+Nr transactions: 2500
+Number transactions per batch: 614
+Nr batches: 4
+LeftoverBatch? Yes
+Nr transactions leftover batch: 44
+Took 0.112262 ms to insert 5000 records 
+Took 0.746329 ms to read 5000 records 
+5000   //Number of records in the database  at the end of the test
+Good drop
+```
+
+Notice that a series of `helloworld*` files are created in the standalone folder during the test. These are the SQLite files.
 
 ##Testing SQLite on STM32
