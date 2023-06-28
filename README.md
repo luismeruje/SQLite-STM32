@@ -23,6 +23,7 @@ The standalone folder contains the standard amalgamation of sqlite (i.e., sqlite
 
 ```
 cp  bench_sqlite3.c.temp SQLite-standalone/bench_sqlite3.c
+cp  bench_sqlite3.h.temp SQLite-standalone/bench_sqlite3.h
 cd SQLite-standalone
 make
 ./sqlite3_bench
