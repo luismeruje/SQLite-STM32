@@ -22,8 +22,8 @@ Then copy the file to the standalone folder, compile and run.
 The standalone folder contains the standard amalgamation of sqlite (i.e., sqlite3.c), which was not modified to run on STM32. For more details on the sqlite amalagamation check [this page]([https://www.google.com](https://www.sqlite.org/amalgamation.html)https://www.sqlite.org/amalgamation.html).
 
 ```
-cp  bench_sqlite3.c.temp SQLite-standalone/bench_sqlite3.c
-cp  bench_sqlite3.h.temp SQLite-standalone/bench_sqlite3.h
+cp  bench_sqlite3.c.temp SQLite-standalone/src/bench_sqlite3.c
+cp  bench_sqlite3.h.temp SQLite-standalone/src/bench_sqlite3.h
 cd SQLite-standalone
 make
 ./sqlite3_bench
