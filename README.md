@@ -47,4 +47,29 @@ Good drop
 
 Notice that a series of `helloworld*` files are created in the standalone folder during the test. These are the SQLite files.
 
-##Testing SQLite on STM32
+## Testing SQLite on STM32
+
+Configure the benchmark, enabling the STM32 mode at the beginning of the  `bench_sqlite3.c.temp` file.
+
+```
+#define OPERATIONS_PER_TRANSACTION 2   //Number of operations per transaction (e.g, 2 inserts per transaction in this case)
+#define NR_TRANSACTIONS 2500           //Total number of executed transactions
+#define STM32 1                  //Leave commented, unless you are running test on STM32
+```
+
+Then copy the benchmark files to the appropriate folder:
+```
+cp bench_sqlite3.c.temp MRAM-sqlite-STM32IDE/Core/Src/Benchmark/bench_sqlite3.c
+cp bench_sqlite3.h.temp MRAM-sqlite-STM32IDE/Core/Src/Benchmark/bench_sqlite3.h
+```
+
+There are a series of other configurations you should adjust to run SQLite on your STM32 device, especially if it is not on the supported devices list. Below is an example considering the onboard FLASH as the storage device.
+**WARNING**: Due to the limited amount of erase-write cycles for NOR Flash, using it as the underlying storage for SQLite can be risky if you intend to write a lot of data.
+
+The file `MRAM-sqlite-STM32IDE/Core/Inc/definitions.h` holds FLASH configurations.
+```
+#define RESERVED_CODE_SECTORS 6                    //Number of flash sectors being used to store code. SQLite data cannot be stored in this sectors
+#define FLASH_BANK_1_START_ADDRESS  0x08000000     //
+#define FLASH_BANK_2_START_ADDRESS  0x08100000
+```
+
