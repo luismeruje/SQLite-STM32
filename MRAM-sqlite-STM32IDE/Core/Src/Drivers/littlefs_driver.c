@@ -14,8 +14,6 @@
 #include "MRAM_driver.h"
 #include "mram_commons.h"
 
-#define MRAM
-
 #ifndef MRAM
 int lfs_read_flash(const struct lfs_config *c, lfs_block_t block,
             lfs_off_t off, void *buffer, lfs_size_t size){
@@ -59,7 +57,7 @@ int lfs_prog_flash(const struct lfs_config *c, lfs_block_t block,
     // are propagated to the user.
     // May return LFS_ERR_CORRUPT if the block should be considered bad.
 int lfs_erase_sector_flash(const struct lfs_config *c, lfs_block_t block){
-	block += RESERVED_CODE_SECTORS; //Leaving sector 0 of bank 1 for code.
+	block += RESERVED_CODE_SECTORS; //Leaving sectors 0-5 of bank 1 for code.
 	uint8_t bank = -1, sectorNumber = -1;
 	if (block >= 8){
 		bank = 2;

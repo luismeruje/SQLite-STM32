@@ -1,22 +1,19 @@
 #include "stm32h7xx_hal.h"
 #include <stdbool.h>
 
-#define BANK1_START_ADDR 0x080000000
-#define BANK2_START_ADDR 0x081000000
-#define SECTOR_SIZE 0x001000000
 #define FLASH_TIMEOUT_VALUE 50000U
 
 //NOTE: For use with stm32h743
-//Entire sector must be erased before being used
+
 
 //Inspired on: https://stackoverflow.com/questions/67427977/stm32-flash-write-causes-multiple-hardfault-errors
 //And also on examples from: ControllersTech.com
 
-//INFO: Flash has 256bits per row. Buffers have 256 bit size. Erases are done per sector of 128KB. Writes can be done in . There are queues for write/read operations, and writes can be done async through interrupt callbacks.
+//INFO: Flash has 256bits per page. Buffers have 256 bit size. Erases are done per sector of 128KB. There are queues for write/read operations, and writes can be done async through interrupt callbacks.
 //FROM MANUAL: A 256-bit write data buffer is associated with each AXI interface. It supports multiple
 //write access types (64 bits, 32 bits, 16 bits and 8 bits).
 
-//TODO: Flash programming in parallel up to 64 bits is possible. Check manual. I believe it is currently set to 32 bits in parallel. Should this be taken into account in the results?
+//TODO: Flash programming in parallel up to 64 bits is possible. Check manual. I believe it is currently set to 32 bits in parallel.
 //TODO: Flash protection settings may also affect performance of Flash
 //TODO: "Using a force-write operation prevents the application from updating later the missing bits with a value different from 1." Why?
 uint32_t erase_flash_sector(unsigned int sectorNumber, unsigned int bank){
@@ -80,6 +77,7 @@ __RAM_FUNC HAL_StatusTypeDef flash_write_32bit(uint32_t address, uint32_t data){
 int flush_flash(){
 	FLASH_WaitForLastOperation((uint32_t)1000, 0x02U);
 	__DSB();
+	return 0;
 }
 
 //WARNING: Assuming write starts at beggining of a 256bit row

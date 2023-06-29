@@ -1,9 +1,0 @@
-../Core/Src/Benchmark/bench_sqlite3.c:24:11:sqlite_init	32	static
-../Core/Src/Benchmark/bench_sqlite3.c:42:6:create_table	24	static
-../Core/Src/Benchmark/bench_sqlite3.c:61:6:drop_table	24	static
-../Core/Src/Benchmark/bench_sqlite3.c:79:6:print_sqlite_version	32	static
-../Core/Src/Benchmark/bench_sqlite3.c:99:6:prepare_write_queries	120	static
-../Core/Src/Benchmark/bench_sqlite3.c:118:6:prepare_read_queries	24	static
-../Core/Src/Benchmark/bench_sqlite3.c:128:6:measure_basic_throughput	136	static
-../Core/Src/Benchmark/bench_sqlite3.c:255:6:wipe_flash	8	static
-../Core/Src/Benchmark/bench_sqlite3.c:264:5:test_sqlite3	32	static

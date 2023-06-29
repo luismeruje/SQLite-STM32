@@ -1,2 +1,0 @@
-../Core/Src/little-fs-test.c:45:6:erase_all_sectors	8	static
-../Core/Src/little-fs-test.c:51:5:test_lfs	16	static

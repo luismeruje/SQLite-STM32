@@ -1,8 +1,0 @@
-../Core/Src/FLASH_SECTOR_H7.c:41:28:GetSector	0	static
-../Core/Src/FLASH_SECTOR_H7.c:151:6:float2Bytes	0	static
-../Core/Src/FLASH_SECTOR_H7.c:166:7:Bytes2float	0	static
-../Core/Src/FLASH_SECTOR_H7.c:195:21:Flash_Write_Data	32	static
-../Core/Src/FLASH_SECTOR_H7.c:256:6:Flash_Read_Data	0	static
-../Core/Src/FLASH_SECTOR_H7.c:270:6:Convert_To_Str	16	static
-../Core/Src/FLASH_SECTOR_H7.c:281:6:Flash_Write_NUM	32	static
-../Core/Src/FLASH_SECTOR_H7.c:290:7:Flash_Read_NUM	0	static

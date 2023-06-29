@@ -5,8 +5,8 @@
  *      Author: luisferreira
  */
 //========== SETTINGS ===========
-#define OPERATIONS_PER_TRANSACTION 2
-#define NR_TRANSACTIONS 2500
+#define OPERATIONS_PER_TRANSACTION 10
+#define NR_TRANSACTIONS 10
 // #define STM32 1
 //===============================
 
@@ -22,6 +22,7 @@
 #include "lfs.h"
 #include "flash_driver.h"
 #include "littlefs_sqlite_vfs.h"
+#define UNSIGNED_FORMAT "%lu"
 
 #else
 #include <stdint.h>
@@ -55,7 +56,6 @@ sqlite3 * sqlite_init(void * heap_buffer, uint32_t szBuf){
 
 	sqlite3_config(SQLITE_CONFIG_PAGECACHE,0x20000000,32,4000);
 	sqlite3_config(SQLITE_CONFIG_HEAP, heap_buffer, szBuf, 2);
-	sqlite3_config(SQLITE_CONFIG_MMAP_SIZE,0,0);
 #endif
 
 #ifdef STM32
@@ -115,10 +115,10 @@ void prepare_write_queries(char (* sqlQueries)[TRANSACTION_STRING_SIZE], uint32_
 	  sprintf(sqlQueries[t], "INSERT INTO Sensor VALUES ");
 
 	  for (int i = 0; i < OPERATIONS_PER_TRANSACTION - 1; i++, *value += 1){
-		  sprintf(aux, "(%u,%d,%d,%d),",*value, rand()%255,rand()%255,rand()%255);
+		  sprintf(aux, "(" UNSIGNED_FORMAT ",%d,%d,%d),",*value, rand()%255,rand()%255,rand()%255);
 		  strcat(sqlQueries[t], aux);
 	  }
-	  sprintf(aux, "(%u,%d,%d,%d);",*value,rand()%255,rand()%255,rand()%255);
+	  sprintf(aux, "(" UNSIGNED_FORMAT ",%d,%d,%d);",*value,rand()%255,rand()%255,rand()%255);
 	  *value += 1;
 	  strcat(sqlQueries[t], aux);
 	}
@@ -130,7 +130,7 @@ void prepare_read_queries(char (* sqlQueries)[TRANSACTION_STRING_SIZE], uint32_t
 
 	for(int t = 0; t < numQueries; t++){
 	  //Create queries
-	  sprintf(sqlQueries[t], "SELECT Pressure from Sensor WHERE %u <= Timestamp < %u;", OPERATIONS_PER_TRANSACTION * (queryOffset+t), OPERATIONS_PER_TRANSACTION * (1+queryOffset+t));
+	  sprintf(sqlQueries[t], "SELECT Pressure from Sensor WHERE " UNSIGNED_FORMAT " <= Timestamp < " UNSIGNED_FORMAT ";", OPERATIONS_PER_TRANSACTION * (queryOffset+t), OPERATIONS_PER_TRANSACTION * (1+queryOffset+t));
 	}
 
 	//printf("Example query: %s\n", sqlQueries[1]);
@@ -162,9 +162,9 @@ void measure_basic_throughput(sqlite3 *db){
 	printf("Test setup\n"
 			"Inserts per transaction: %d\n"
 			"Nr transactions: %d\n"
-			"Number transactions per batch: %u\n"
-			"Nr batches: %u\nLeftoverBatch? %s\n"
-			"Nr transactions leftover batch: %u\n",
+			"Number transactions per batch: " UNSIGNED_FORMAT "\n"
+			"Nr batches: " UNSIGNED_FORMAT "\nLeftoverBatch? %s\n"
+			"Nr transactions leftover batch: " UNSIGNED_FORMAT "\n",
 				OPERATIONS_PER_TRANSACTION,
 				NR_TRANSACTIONS,
 				nrTransactionsPerBatch,
@@ -214,7 +214,7 @@ void measure_basic_throughput(sqlite3 *db){
 		}
 #ifdef STM32
     elapsedTime += HAL_GetTick() - startTime;
-	printf("Took %u ms to insert %d records \n", elapsedTime,OPERATIONS_PER_TRANSACTION * NR_TRANSACTIONS)
+	printf("Took %d ms to insert %d records \n", elapsedTime,OPERATIONS_PER_TRANSACTION * NR_TRANSACTIONS);
 #else
 	clock_gettime(CLOCK_REALTIME, &end);
 	timeSpent += (end.tv_sec - start.tv_sec) +
@@ -282,7 +282,7 @@ void measure_basic_throughput(sqlite3 *db){
 		}
 #ifdef STM32
     elapsedTime += HAL_GetTick() - startTime;
-	printf("Took %u ms to read %d records \n", elapsedTime,OPERATIONS_PER_TRANSACTION * NR_TRANSACTIONS)
+	printf("Took %d ms to read %d records \n", elapsedTime,OPERATIONS_PER_TRANSACTION * NR_TRANSACTIONS);
 #else
 	clock_gettime(CLOCK_REALTIME, &end);
 	timeSpent += (end.tv_sec - start.tv_sec) +
@@ -317,8 +317,9 @@ int test_sqlite3(){
   littlefs_vfs_init("helloworld7", 0);
 
   sqlite3 * db = sqlite_init(pBuf, szBuf);
-  #endif
+#else
  sqlite3 * db = sqlite_init(NULL, 0);
+#endif
   print_sqlite_version(db);
   create_table(db);
 
@@ -361,6 +362,8 @@ int test_sqlite3(){
   return 0;
 }
 
+#ifndef STM32
 int main(int argc, char ** argv){
 	test_sqlite3();
 }
+#endif

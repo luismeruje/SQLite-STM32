@@ -58,7 +58,8 @@ typedef struct sqlite3_littlefs_file{
 #include "definitions.h"
 #include "littlefs_driver.h"
 
-/*
+#ifndef MRAM
+//Config for embedded NOR FLASH
 static const struct lfs_config lfs_cfg = {
     // block device operations
     .read  = lfs_read_flash,
@@ -71,12 +72,12 @@ static const struct lfs_config lfs_cfg = {
     .prog_size = 32,
     .block_size = 131072,
     .block_count = 16 - RESERVED_CODE_SECTORS,
-    //.lookahead = 32
 	.cache_size = 32,
     .lookahead_size = 32,
     .block_cycles = 500,
-};*/
-
+};
+#else
+//Config for MRAM
 __IO static const struct lfs_config lfs_cfg = {
     // block device operations
     .read  = lfs_read_flash,
@@ -89,11 +90,11 @@ __IO static const struct lfs_config lfs_cfg = {
     .prog_size = 4,
     .block_size = 128,
     .block_count = 4096,
-    //.lookahead = 32
 	.cache_size = 64,
     .lookahead_size = 32,
     .block_cycles = 10000,
 };
+#endif
 
 static lfs_t lfs;
 

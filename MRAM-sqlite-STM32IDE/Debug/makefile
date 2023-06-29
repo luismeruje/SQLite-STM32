@@ -62,8 +62,8 @@ all: main-build
 main-build: MRAM-sqlite.elf secondary-outputs
 
 # Tool invocations
-MRAM-sqlite.elf MRAM-sqlite.map: $(OBJS) $(USER_OBJS) /Users/luisferreira/STM32CubeIDE/workspace_1.9.0/MRAM-sqlite/STM32H743ZITX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "MRAM-sqlite.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m7 -T"/Users/luisferreira/STM32CubeIDE/workspace_1.9.0/MRAM-sqlite/STM32H743ZITX_FLASH.ld" --specs=nosys.specs -Wl,-Map="MRAM-sqlite.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+MRAM-sqlite.elf MRAM-sqlite.map: $(OBJS) $(USER_OBJS) /Users/luisferreira/Documents/Universidade/hasLab/MRAMen/sqlite-stm32/MRAM-sqlite-STM32IDE/STM32H743ZITX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "MRAM-sqlite.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m7 -T"/Users/luisferreira/Documents/Universidade/hasLab/MRAMen/sqlite-stm32/MRAM-sqlite-STM32IDE/STM32H743ZITX_FLASH.ld" --specs=nosys.specs -Wl,-Map="MRAM-sqlite.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
