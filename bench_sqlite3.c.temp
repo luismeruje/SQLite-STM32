@@ -357,8 +357,9 @@ int test_sqlite3(){
 #ifdef STM32
   littlefs_vfs_ls("/");
   littlefs_vfs_close();
+  free(pBuf);
 #endif
-  //free(pBuf);
+  
   return 0;
 }
 

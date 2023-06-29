@@ -36,34 +36,34 @@ $(wildcard ../makefile.init) \
 $(wildcard ../makefile.targets) \
 
 
-BUILD_ARTIFACT_NAME := MRAM-sqlite
+BUILD_ARTIFACT_NAME := MRAM-sqlite-STM32IDE
 BUILD_ARTIFACT_EXTENSION := elf
 BUILD_ARTIFACT_PREFIX :=
 BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME)$(if $(BUILD_ARTIFACT_EXTENSION),.$(BUILD_ARTIFACT_EXTENSION),)
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXECUTABLES += \
-MRAM-sqlite.elf \
+MRAM-sqlite-STM32IDE.elf \
 
 MAP_FILES += \
-MRAM-sqlite.map \
+MRAM-sqlite-STM32IDE.map \
 
 SIZE_OUTPUT += \
 default.size.stdout \
 
 OBJDUMP_LIST += \
-MRAM-sqlite.list \
+MRAM-sqlite-STM32IDE.list \
 
 
 # All Target
 all: main-build
 
 # Main-build Target
-main-build: MRAM-sqlite.elf secondary-outputs
+main-build: MRAM-sqlite-STM32IDE.elf secondary-outputs
 
 # Tool invocations
-MRAM-sqlite.elf MRAM-sqlite.map: $(OBJS) $(USER_OBJS) /Users/luisferreira/Documents/Universidade/hasLab/MRAMen/sqlite-stm32/MRAM-sqlite-STM32IDE/STM32H743ZITX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "MRAM-sqlite.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m7 -T"/Users/luisferreira/Documents/Universidade/hasLab/MRAMen/sqlite-stm32/MRAM-sqlite-STM32IDE/STM32H743ZITX_FLASH.ld" --specs=nosys.specs -Wl,-Map="MRAM-sqlite.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+MRAM-sqlite-STM32IDE.elf MRAM-sqlite-STM32IDE.map: $(OBJS) $(USER_OBJS) /Users/luisferreira/Documents/Universidade/hasLab/MRAMen/sqlite-stm32/MRAM-sqlite-STM32IDE/STM32H743ZITX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "MRAM-sqlite-STM32IDE.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m7 -T"/Users/luisferreira/Documents/Universidade/hasLab/MRAMen/sqlite-stm32/MRAM-sqlite-STM32IDE/STM32H743ZITX_FLASH.ld" --specs=nosys.specs -Wl,-Map="MRAM-sqlite-STM32IDE.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -72,14 +72,14 @@ default.size.stdout: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	@echo 'Finished building: $@'
 	@echo ' '
 
-MRAM-sqlite.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "MRAM-sqlite.list"
+MRAM-sqlite-STM32IDE.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "MRAM-sqlite-STM32IDE.list"
 	@echo 'Finished building: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) MRAM-sqlite.elf MRAM-sqlite.list MRAM-sqlite.map default.size.stdout
+	-$(RM) MRAM-sqlite-STM32IDE.elf MRAM-sqlite-STM32IDE.list MRAM-sqlite-STM32IDE.map default.size.stdout
 	-@echo ' '
 
 secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)

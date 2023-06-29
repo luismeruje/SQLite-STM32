@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;MRAM-sqlite-STM32IDE/MRAM-sqlite-stm32ide.ioc&apos; to &apos;MRAM-sqlite-STM32IDE.ioc&apos;" description="Rename resource &apos;MRAM-sqlite-stm32ide.ioc&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="MRAM-sqlite-stm32ide.ioc" name="MRAM-sqlite-STM32IDE.ioc" stamp="1688050746075" updateReferences="true"/>
+</session>
