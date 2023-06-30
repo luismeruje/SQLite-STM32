@@ -7,7 +7,7 @@
 //========== SETTINGS ===========
 #define OPERATIONS_PER_TRANSACTION 10
 #define NR_TRANSACTIONS 10
-// #define STM32 1
+#define STM32 1
 //===============================
 
 
@@ -312,7 +312,7 @@ int test_sqlite3(){
   uint32_t szBuf = 500400;
   void * pBuf = malloc(szBuf);
 
-  mram_wipe();
+  //mram_wipe();
   //wipe_flash();
 
   littlefs_vfs_init("helloworld7", 0);
