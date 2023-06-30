@@ -1,6 +1,7 @@
 # SQLite port to STM32 microcontrollers
 This repository intends to help developers run SQLite on STM32 devices. 
 We provide a basic benchmark to insert/read values from SQLite, which showcases the code necessary for basic SQLite setup and query execution.
+
 We provide two versions of SQLite: the standard version, for experimenting with the benchmark and making sure everything is running as expected under a normal UNIX environment; and a version configured specifically for STM32, in the form of an STM32IDE project. This version contains a modified SQLite amalgamation, i.e., the entire SQLite code in a single file ([click here](https://www.sqlite.org/amalgamation.html) for details), and contains code for running SQLite both on the devices embedded FLASH, and on an external storage device (MRAM). For a detailed description of how this amalgamation was created, click here [TODO].
 
 
