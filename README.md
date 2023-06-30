@@ -1,7 +1,8 @@
 # SQLite port to STM32 microcontrollers
 This repository intends to help developers run SQLite on STM32 devices. 
 We provide a basic benchmark to insert/read values from SQLite, which showcases the code necessary for basic SQLite setup and query execution.
-We provide two versions of SQLite: the standard version, for experimenting with the benchmark and making sure everything is running as expected under a normal UNIX environment; and a version configured specifically for STM32, in the form of an STM32IDE project. This version contains a modified SQLite amalgamation, i.e., the entire SQLite code in a single file ([click here](https://www.sqlite.org/amalgamation.html) for details), and contains code for running SQLite both on the devices embedded FLASH, and on an external storage device (MRAM). For a detailed description of how this amalgamation was created, click here [TODO].
+
+We provide two versions of SQLite: the standard version, for experimenting with the benchmark and making sure everything is running as expected under a normal UNIX environment; and a version configured specifically for STM32, in the form of an STM32CubeIDE project. This version contains a modified SQLite amalgamation, i.e., the entire SQLite code in a single file ([click here](https://www.sqlite.org/amalgamation.html) for details), and contains code for running SQLite both on the devices embedded FLASH, and on an external storage device (MRAM). For a detailed description of how this amalgamation was created, click here [TODO].
 
 
 **This code is not intended to be used in production environments, use it at your own risk.**
@@ -26,7 +27,7 @@ First, make sure the benchmark is correctly configured, by setting the appropria
 
 Then copy the template files to the standalone folder, compile the code and run. 
 
-```C++
+```bash
 cp bench_sqlite3.c.temp SQLite-standalone/src/bench_sqlite3.c
 cp bench_sqlite3.h.temp SQLite-standalone/inc/bench_sqlite3.h
 cd SQLite-standalone
@@ -53,7 +54,7 @@ Good drop
 Notice that the benchmark splits execution into multiple batches. This is done to keep memory consumption low in the STM32, since the query strings are generated before the actual timed run. Also, a series of `helloworld*` files are created in the standalone folder during the test. These are the SQLite data files.
 
 ## Testing SQLite on STM32
-The `MRAM-sqlite-STM32` folder contains an STM32IDE project to run SQLite on STM32 devices. The project is set for a NUCLEO-H743ZI board.
+The `MRAM-sqlite-STM32` folder contains an STM32CubeIDE project to run SQLite on STM32 devices. The project is set for a NUCLEO-H743ZI board.
 Inside there is an SQLite amalgamation, more specifically at `MRAM-sqlite-STM32IDE/Core/Src/sqlite3.c`, which is configured specifically to run sqlite on the STM32.
 Some options include setting single thread execution, enabling the memsys5 memory manager, and omitting components to lower resource consumption.
 For a detailed description of how this amalgamation was created click here [TODO].
@@ -69,12 +70,12 @@ Let's start by enabling the STM32 mode at the beginning of the `bench_sqlite3.c.
 ```
 
 Then copy the benchmark files to the appropriate folder:
-```C++
+```bash
 cp bench_sqlite3.c.temp MRAM-sqlite-STM32IDE/Core/Src/Benchmark/bench_sqlite3.c
 cp bench_sqlite3.h.temp MRAM-sqlite-STM32IDE/Core/Inc/bench_sqlite3.h
 ```
 
-Finally, open the root folder of the repository as an STM32IDE workspace, or just import the project `MRAM-sqlite-STM32` to your STM32IDE. 
+Finally, open the root folder of the repository as an STM32CubeIDE workspace, or just import the project `MRAM-sqlite-STM32` to your STM32IDE. 
 
 **The standard output is redirected to the SWV ITM Data Console,** so make sure you have SWV correctly enabled. For further details, see [this tutorial](https://www.steppeschool.com/pages/blog?p=stm32-printf-function-swv-stm32cubeide).
 
