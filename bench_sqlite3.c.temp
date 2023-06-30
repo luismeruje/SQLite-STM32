@@ -30,6 +30,7 @@
 #include <stdlib.h>
 #include <string.h>
 #define BILLION  1000000000.0
+#define UNSIGNED_FORMAT "%u"
 #endif
 
 
@@ -78,7 +79,7 @@ void create_table(sqlite3 *db){
 	rc = sqlite3_exec(db, createTable, 0, 0, &err_msg);
 
 	check_error(rc,db);
-	printf("Good create\n");
+	printf("Good table create\n");
 	
 }
 
@@ -88,7 +89,7 @@ void drop_table(sqlite3 *db){
 	char * dropTableIfExists = "DROP TABLE IF EXISTS Sensor;";
 	rc = sqlite3_exec(db, dropTableIfExists, 0, 0, &err_msg);
 	check_error(rc,db);
-	printf("Good drop\n");
+	printf("Good table drop\n");
 	
 }
 
