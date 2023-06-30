@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="ShowViewDialog">
+		<item key="ShowViewDialog.STORE_SELECTED_VIEW_ID" value="com.st.stm32cube.ide.mcu.debug.swv.core.itmtrace"/>
+		<item key="DIALOG_X_ORIGIN" value="1128"/>
+		<item key="DIALOG_Y_ORIGIN" value="440"/>
+		<item key="DIALOG_WIDTH" value="305"/>
+		<item key="DIALOG_HEIGHT" value="420"/>
+		<item key="DIALOG_FONT_NAME" value="1|.AppleSystemUIFont|11.0|0|COCOA|1|.AppleSystemUIFont"/>
+		<list key="ShowViewDialog.STORE_EXPANDED_CATEGORIES_ID">
+			<item value="Debug"/>
+			<item value="SWV"/>
+		</list>
+	</section>
+</section>

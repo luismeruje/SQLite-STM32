@@ -4823,3 +4823,19 @@ java.lang.IllegalArgumentException: Argument not valid
 	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:659)
 	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:596)
 	at org.eclipse.equinox.launcher.Main.run(Main.java:1467)
+!SESSION 2023-06-29 17:16:26.944 -----------------------------------------------
+eclipse.buildId=Version 1.10.1
+java.version=11.0.14.1
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=macosx, ARCH=x86_64, WS=cocoa, NL=pt_PT
+Framework arguments:  -keyring /Users/luisferreira/.eclipse_keyring
+Command-line arguments:  -os macosx -ws cocoa -arch x86_64 -keyring /Users/luisferreira/.eclipse_keyring
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2023-06-29 17:16:45.204
+!MESSAGE Log4j initialized with config file /Users/luisferreira/Documents/Universidade/hasLab/MRAMen/sqlite-stm32/.metadata/.log4j.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2023-06-29 17:16:53.557
+!MESSAGE Started RMI Server, listening on port 41337
+
+!ENTRY com.st.stm32cube.ide.mcu.debug.swv 1 1 2023-06-29 17:18:47.430
+!MESSAGE SWV configuration; base: 192000000; minDiv: 16; maxDiv: 65535; maxSWO: 12000000; limit: 12000000 => SWO: 12000000; CPU: 480000000; div: 40

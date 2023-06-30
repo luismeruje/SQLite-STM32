@@ -1,9 +1,16 @@
 # SQLite port to STM32 microcontrollers
+This repository intends to help developers run SQLite on STM32 devices. 
+We provide a basic benchmark to insert/read values from SQLite, which showcases the code necessary for basic SQLite setup and query execution.
+We provide two versions of SQLite: the standard version, for experimenting with the benchmark and making sure everything is running as expected under a normal UNIX environment; and a version configured specifically for STM32, in the form of an STM32IDE project. This version contains a modified SQLite amalgamation, i.e., the entire SQLite code in a single file ([click here](https://www.sqlite.org/amalgamation.html) for details), and contains code for running SQLite both on the devices embedded FLASH, and on an external storage device (MRAM). For a detailed description of how this amalgamation was created, click here [TODO].
+
+
+**This code is not intended to be used in production environments, use it at your own risk.**
 
 ### Compatibility
-This port has only been tested in the microconotrollers described below. If you are able to successfully run STM32 in a different microcontroller, please let me know so I can add it to the list.
+This port has only been tested in the microcontrollers described below. If you are able to successfully run STM32 in a different microcontroller, please make a push-request so that we can add it to the list of supported devices. Keep in mind that the current amalgamation occupies roughly 700KB, so you will need a microcontroller with at least 1MB of flash storage.
 
-STM32H743ZI
+Supported devices:
+- STM32H743ZI
 
 ## Testing SQLite on a UNIX system
 
@@ -14,12 +21,10 @@ First, make sure the benchmark is correctly configured, by setting the appropria
 ```C++
 #define OPERATIONS_PER_TRANSACTION 2   //Number of operations per transaction (e.g, 2 inserts per transaction in this case)
 #define NR_TRANSACTIONS 2500           //Total number of executed transactions
-// #define STM32 1                  //Leave commented, unless you are running test on STM32
+// #define STM32 1                  //Leave commented, unless you are running this benchmark on STM32
 ```
 
-Then copy the file to the standalone folder, compile and run. 
-
-The standalone folder contains the standard amalgamation of sqlite (i.e., sqlite3.c), which was not modified to run on STM32. For more details on the sqlite amalagamation check [this page]([https://www.google.com](https://www.sqlite.org/amalgamation.html)https://www.sqlite.org/amalgamation.html).
+Then copy the template files to the standalone folder, compile the code and run. 
 
 ```C++
 cp bench_sqlite3.c.temp SQLite-standalone/src/bench_sqlite3.c
@@ -45,7 +50,7 @@ Took 0.746329 ms to read 5000 records
 Good drop
 ```
 
-Notice that a series of `helloworld*` files are created in the standalone folder during the test. These are the SQLite files.
+Notice that the benchmark splits execution into multiple batches. This is done to keep memory consumption low in the STM32, since the query strings are generated before the actual timed run. Also, a series of `helloworld*` files are created in the standalone folder during the test. These are the SQLite data files.
 
 ## Testing SQLite on STM32
 The `MRAM-sqlite-STM32` folder contains an STM32IDE project to run SQLite on STM32 devices. The project is set for a NUCLEO-H743ZI board.
@@ -53,14 +58,14 @@ Inside there is an SQLite amalgamation, more specifically at `MRAM-sqlite-STM32I
 Some options include setting single thread execution, enabling the memsys5 memory manager, and omitting components to lower resource consumption.
 For a detailed description of how this amalgamation was created click here [TODO].
 
-Furthermore, it also includes LittleFS, which is used as the underlying filesystem for SQLite.
+SQLite requires access to a file system, so we have selected LittleFS to provide that functionality.
 
-Let's start by enabling the STM32 mode at the beginning of the  `bench_sqlite3.c.temp` file.
+Let's start by enabling the STM32 mode at the beginning of the `bench_sqlite3.c.temp` file.
 
 ```C++
 #define OPERATIONS_PER_TRANSACTION 2   //Number of operations per transaction (e.g, 2 inserts per transaction in this case)
-#define NR_TRANSACTIONS 2500           //Total number of executed transactions
-#define STM32 1                  //Leave commented, unless you are running test on STM32
+#define NR_TRANSACTIONS 10             //Total number of executed transactions
+#define STM32 1                  //<-- ENABLE THIS LINE
 ```
 
 Then copy the benchmark files to the appropriate folder:
@@ -69,12 +74,21 @@ cp bench_sqlite3.c.temp MRAM-sqlite-STM32IDE/Core/Src/Benchmark/bench_sqlite3.c
 cp bench_sqlite3.h.temp MRAM-sqlite-STM32IDE/Core/Inc/bench_sqlite3.h
 ```
 
-Finally, import the project `MRAM-sqlite-STM32` to your STM32IDE. **The standard output is redirected to the SWV ITM Data Console.**
+Finally, open the root folder of the repository as an STM32IDE workspace, or just import the project `MRAM-sqlite-STM32` to your STM32IDE. 
 
-There are a series of other configurations you should adjust to run SQLite on your STM32 device, especially if it is not on the supported devices list. Below is an example considering the onboard FLASH as the storage device.
-**WARNING**: The embedded NOR Flash has a limited amount of erase-write cycles. Using it as the underlying storage for SQLite can be risky if you intend to write a lot of data.
+**The standard output is redirected to the SWV ITM Data Console,** so make sure you have SWV correctly enabled. For further details, see [this tutorial](https://www.steppeschool.com/pages/blog?p=stm32-printf-function-swv-stm32cubeide).
 
-Adjust your FLASH configurations `MRAM-sqlite-STM32IDE/Core/Inc/definitions.h` and make sure that MRAM is not enabled.
+As long as you are using the same STM32 device (NUCLEO-H743ZI), then that should be everything you need to run SQLite on your device.
+
+By default, SQLite will use the onboard Flash storage. **WARNING**: The embedded NOR Flash has a limited amount of erase-write cycles. Using it as the underlying storage for SQLite can be risky if you intend to write a lot of data.
+
+## Running SQLite on other STM32 microcontrollers
+
+There are a series of other configurations you should adjust to run SQLite on your STM32 device, especially if it is not on the supported devices list.
+
+First, you should set the project to your own type of microcontroller. The easiest way to do so would be to create a new project, and then copy the code over from the files in this repository's `MRAM-sqlite-STM32` folder. 
+
+Then, adjust the FLASH configurations in `MRAM-sqlite-STM32IDE/Core/Inc/definitions.h` to match your own MCU.
 ```C++
 #define RESERVED_CODE_SECTORS 6                    //Number of flash sectors being used to store code. SQLite data cannot be stored in this sectors
 #define FLASH_BANK_1_START_ADDRESS  0x08000000     //Start address of embedded FLASH's BANK 1
@@ -82,7 +96,7 @@ Adjust your FLASH configurations `MRAM-sqlite-STM32IDE/Core/Inc/definitions.h` a
 //#define MRAM 1                                    //Set MRAM as the underlying storage device
 ```
 
-In the file `MRAM-sqlite-STM32IDE/Core/Src/littlefs_sqlite_vfs.c` you can adjust LittleFS's settings, such as cache size:
+In the file `MRAM-sqlite-STM32IDE/Core/Src/littlefs_sqlite_vfs.c` you can adjust LittleFS's settings, including the ones that are specific to your device's FLASH specifications, such as block_size, block count, read_size, prog_size, and so on:
 
 ```C++
 //Config for embedded NOR FLASH
@@ -105,8 +119,9 @@ static const struct lfs_config lfs_cfg = {
 };
 ```
 
-If you are having issues with LittleFS, you can try wiping the FLASH sectors that are being used for storing your SQLite data by enabling the following line in `MRAM-sqlite-STM32IDE/Core/Src/Benchmark/bench_sqlite3.c`. Don't forget to also check the FLASH erasing function, to see if it is compatible with your device.
-WARNING: You will, of course, lose any data you may have if you do this! And do not forget that the embedded FLASH has a limited number of erase-write cycles.
+If you are having issues with LittleFS, you can try wiping the FLASH sectors that are being used for storing your SQLite data by enabling the following line in `MRAM-sqlite-STM32IDE/Core/Src/Benchmark/bench_sqlite3.c`. Don't forget to also check the FLASH erasing function, to see if it is compatible with your device's FLASH.
+
+**WARNING: You will, of course, lose any data you may have if you do this!**
 
 ```C++
 #ifdef STM32
@@ -134,8 +149,6 @@ int test_sqlite3(){
 }
 ```
 
-Other files to take into account when configuring your device, especially if you are trying to adapt this project to a different STM32 MCU: `MRAM-sqlite-STM32IDE/Core/Drivers/flash_driver.c`.
-
 Finally, you may want to adjust the runtime options passed to SQLite to match your device and to improve overall performance.
 
 In `MRAM-sqlite-STM32IDE/Core/Src/Benchmark/bench_sqlite3.c`:
@@ -154,19 +167,20 @@ sqlite3 * sqlite_init(void * heap_buffer, uint32_t szBuf){
 [...]
 }
 ```
-`SQLITE_CONFIG_HEAP` sets a buffer to be used by SQLite instead of using memory assigned by malloc. This is a mechanism made available by the memsys5 memory allocator (see [TODO:link]). 
-Other options include the number of pages at which WAL checkpointing occurs, page size, among others. See [TODO:link]. 
-Default values can also be set during compilation of the amalgamation file. For the sqlite amalgamation used in the STM32 the default page size was set to 512 bytes, WAL checkpoints default to intervals of 100 pages and the maximum number of pages is set to 400 (we refer again to the detailed description on how this amalgamation was built [TODO:link]).
+`SQLITE_CONFIG_HEAP` sets a buffer to be used by SQLite instead of using memory assigned by malloc. This is a mechanism made available by the memsys5 memory allocator ( more details [here](https://www.sqlite.org/malloc.html) ). 
+
+Other options include the number of pages at which WAL checkpointing occurs, page size, among others. All run-time configurations can be consulted [here](https://www.sqlite.org/pragma.html). 
+
+Default values can also be set during compilation of the amalgamation file. For the sqlite amalgamation used in the STM32, the default page size was set to 512 bytes, WAL checkpoints default to intervals of 100 pages and the maximum number of pages is set to 400 (we refer again to the detailed description on how this amalgamation was built [TODO:link]).
 
 ### Running SQLite on an alternative storage medium (MRAM example)
 
 Since onboard FLASH storage is often rather limited, external storage can be used instead. Here we give an example for how to run SQLite over MRAM. 
 The code needed is already included in the `MRAM-sqlite-STM32IDE` project, needing only a few adjustments. We selected MRAM as an alternative for academic research purposes, but you can follow similar steps to use, for example, an external NAND Flash storage device.
 
-First, you must set up your `.ioc` configuration so that you can interface your external storage device. We set our MRAM to be accessible at 0xc0000000.
+First, you must set up your `.ioc` configuration so that you can interface your external storage device. We set our MRAM to be accessible through the FMC at 0xc0000000. Details on FMC usage and configuration can be found in the microcontroller's manual.
 
-
-It is a good idea to also set your external device as write-through using the Memory Protection Unit (MPU). Since data cache is enabled in this project, the write-through configuration is required to ensure consistency of the database data in case of failure. To do so you must enable the highlighted call `MRAM-sqlite-STM32IDE/Core/Src/main.c`, as well as make any necessary adjustments to the `MPU_RegionConfig()` function.
+It is a good idea to also set your external device as write-through using the Memory Protection Unit (MPU). Since data cache is enabled in this project, the write-through configuration is required to ensure consistency of the database data in case of failure. To do so you must enable the highlighted call belo from the `MRAM-sqlite-STM32IDE/Core/Src/main.c` file, as well as make any necessary adjustments to the `MPU_RegionConfig()` function.
 
 ```C++
 void MPU_RegionConfig()
@@ -238,7 +252,7 @@ int lfs_erase_sector_flash(const struct lfs_config *c, lfs_block_t block);
 int lfs_sync_flash(const struct lfs_config *c);
 ```
 
-
+It will also select a different configuration for LittleFS in the `MRAM-sqlite-STM32IDE/Core/Src/littlefs_sqlite_vfs.c` file, which you should also consider if implementing a different storage medium. 
 
 
 ## Known issues and recommendations
