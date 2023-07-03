@@ -19,6 +19,10 @@ Before attempting to run SQLite on the STM32 it is a good idea to test it in a n
 
 First, make sure the benchmark is correctly configured, by setting the appropriate MACROS at the beginning of the  `bench_sqlite3.c.temp` file.
 
+```bash
+vim bench_sqlite3.c.temp
+```
+
 ```C++
 #define OPERATIONS_PER_TRANSACTION 2   //Number of operations per transaction (e.g, 2 inserts per transaction in this case)
 #define NR_TRANSACTIONS 2500           //Total number of executed transactions
@@ -62,6 +66,10 @@ For a detailed description of how this amalgamation was created click here [TODO
 SQLite requires access to a file system, so we have selected LittleFS to provide that functionality.
 
 Let's start by enabling the STM32 mode at the beginning of the `bench_sqlite3.c.temp` file.
+
+```bash
+vim bench_sqlite3.c.temp
+```
 
 ```C++
 #define OPERATIONS_PER_TRANSACTION 2   //Number of operations per transaction (e.g, 2 inserts per transaction in this case)
