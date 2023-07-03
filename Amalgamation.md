@@ -20,7 +20,13 @@ For our sqlite3 amalgamation, the following options are used:
  * SQLITE_OMIT_AUTOINCREMENT 
  * SQLITE_OMIT_SHARED_CACHE
 
+The *memsys5* memory allocator allows you to pass SQLite a buffer that it will use in place of malloc allocations. Not only does this allow you to set a maximum size for used memory, but it also allows you to set the buffer in memory regions which are not being used and where heap is not implemented. For example, in the STM32H743ZI MCU there are 3 different regions of memory, and only one of them is used for heap and stack memory, leaving the remaining regions unused. 
 
+The *DEFAULT_PAGE_SIZE*, *DEFAULT_CACHE_SIZE*, *DEFAULT_WAL_AUTOCHECKPOINT*  and MAX_PAGE_COUNT let you control how much resources SQLite consumes. They also have an impact in database performance.
+
+The *OS_OTHER* option disables the default OS layers, which do not compile on STM32 devices. You must implement your own OS layer. For more information see the [README](./README.md) and also check SQLite's [documentation](https://www.sqlite.org/vfs.html).
+
+The *OMIT* clauses reduce the final size of the code, however they are not fully supported, so using them may result in code with errors which you must fix. Feel free to try adding/removing different *OMIT* clauses and see how it affects final code size and performance. A full list of *OMIT* clauses and their effects can be found [here](https://www.sqlite.org/compile.html). 
 
 ## Building the amalgamation
 Below are the steps needed to build the amalgamation file.
