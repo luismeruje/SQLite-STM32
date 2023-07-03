@@ -2,7 +2,7 @@
 This repository intends to help developers run SQLite on STM32 devices. 
 We provide a basic benchmark to insert/read values from SQLite, which showcases the code necessary for basic SQLite setup and query execution.
 
-We provide two versions of SQLite: the standard version, for experimenting with the benchmark and making sure everything is running as expected under a normal UNIX environment; and a version configured specifically for STM32, in the form of an STM32CubeIDE project. This version contains a modified SQLite amalgamation, i.e., the entire SQLite code in a single file ([click here](https://www.sqlite.org/amalgamation.html) for details), and contains code for running SQLite both on the devices embedded FLASH, and on an external storage device (MRAM). For a detailed description of how this amalgamation was created, click here [TODO].
+We provide two versions of SQLite: the standard version, for experimenting with the benchmark and making sure everything is running as expected under a normal UNIX environment; and a version configured specifically for STM32, in the form of an STM32CubeIDE project. This version contains a modified SQLite amalgamation, i.e., the entire SQLite code in a single file ([click here](https://www.sqlite.org/amalgamation.html) for details), and contains code for running SQLite both on the devices embedded FLASH, and on an external storage device (MRAM). For a detailed description of how this amalgamation was created, click [here](./Amalgamation.md).
 
 
 **This code is not intended to be used in production environments, use it at your own risk.**
@@ -57,7 +57,7 @@ Notice that the benchmark splits execution into multiple batches. This is done t
 The `MRAM-sqlite-STM32` folder contains an STM32CubeIDE project to run SQLite on STM32 devices. The project is set for a NUCLEO-H743ZI board.
 Inside there is an SQLite amalgamation, more specifically at `MRAM-sqlite-STM32IDE/Core/Src/sqlite3.c`, which is configured specifically to run sqlite on the STM32.
 Some options include setting single thread execution, enabling the memsys5 memory manager, and omitting components to lower resource consumption.
-For a detailed description of how this amalgamation was created click here [TODO].
+For a detailed description of how this amalgamation was created click [here](./Amalgamation.md).
 
 SQLite requires access to a file system, so we have selected LittleFS to provide that functionality.
 
@@ -82,6 +82,12 @@ Finally, open the root folder of the repository as an STM32CubeIDE workspace, or
 As long as you are using the same STM32 device (NUCLEO-H743ZI), then that should be everything you need to run SQLite on your device.
 
 By default, SQLite will use the onboard Flash storage. **WARNING**: The embedded NOR Flash has a limited amount of erase-write cycles. Using it as the underlying storage for SQLite can be risky if you intend to write a lot of data.
+
+To run the test just press the debug symbol 
+
+---
+---
+
 
 ## Running SQLite on other STM32 microcontrollers
 
@@ -172,7 +178,7 @@ sqlite3 * sqlite_init(void * heap_buffer, uint32_t szBuf){
 
 Other options include the number of pages at which WAL checkpointing occurs, page size, among others. All run-time configurations can be consulted [here](https://www.sqlite.org/pragma.html). 
 
-Default values can also be set during compilation of the amalgamation file. For the sqlite amalgamation used in the STM32, the default page size was set to 512 bytes, WAL checkpoints default to intervals of 100 pages and the maximum number of pages is set to 400 (we refer again to the detailed description on how this amalgamation was built [TODO:link]).
+Default values can also be set during compilation of the amalgamation file. For the sqlite amalgamation used in the STM32, the default page size was set to 512 bytes, WAL checkpoints default to intervals of 100 pages and the maximum number of pages is set to 400 (we refer again to the detailed description on [how this amalgamation was built](./Amalgamation.md)).
 
 ### Running SQLite on an alternative storage medium (MRAM example)
 
