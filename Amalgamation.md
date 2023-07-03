@@ -2,15 +2,15 @@
 
 The SQLite amalgamation is an aggregation of all SQLite code in a single file, so that it can be easily included by an application. The steps needed to build this amalgamation are given by SQLite itself [here](https://www.sqlite.org/amalgamation.html). Make sure you can successfully build the amalgamation files (sqlite3.c and sqlite3.h) before proceeding.
 
-SQLite provides a series of compilation options such has determining database behavior, omitting certain components of the database, setting default configurations and defining the target OS. All options and corresponding descriptions can be found [here](https://www.sqlite.org/compile.html).
+SQLite provides a series of compilation options such that determine database behavior, omit components of the database, set default configurations and define the target OS. All options and corresponding descriptions can be found [here](https://www.sqlite.org/compile.html).
 
 For our sqlite3 amalgamation, the following options are used:
 
- * SQLITE_ENABLE_MEMSYS5 -> allows for zero-malloc memory. 
- * SQLITE_THREADSAFE=0 -> single-thread execution
- * SQLITE_OS_OTHER=1 -> do not include default OS layers (i.e., VFSs)
- * SQLITE_DEFAULT_PAGE_SIZE=512 -> power 2 between 512 and 65536. Default is 4096
- * SQLITE_DEFAULT_CACHE_SIZE=100 -> Will give you 100*1024bytes of cache. Default value is 2000.
+ * SQLITE_ENABLE_MEMSYS5 -> Allows for zero-malloc memory. 
+ * SQLITE_THREADSAFE=0 -> Single-thread execution.
+ * SQLITE_OS_OTHER=1 -> Do not include default OS layers (i.e., VFSs).
+ * SQLITE_DEFAULT_PAGE_SIZE=512 -> Power of 2 between 512 and 65536. Default is 4096.
+ * SQLITE_DEFAULT_CACHE_SIZE=100 -> Will give you 100 * 1024 bytes of cache. Default value is 2000.
  * SQLITE_DEFAULT_WAL_AUTOCHECKPOINT=100 -> Number of pages before checkpoint (flushing wal). Default is 1000. Allows you to limit maximum wal file size, very important!
  * SQLITE_MAX_PAGE_COUNT=400 -> 450*512 bytes ≈ 200KB of storage. You should increase/decrease this value according to the amount of available space in your device.
  * SQLITE_OMIT_ALTERTABLE
@@ -20,7 +20,7 @@ For our sqlite3 amalgamation, the following options are used:
  * SQLITE_OMIT_AUTOINCREMENT 
  * SQLITE_OMIT_SHARED_CACHE
 
-The *memsys5* memory allocator allows you to pass SQLite a buffer that it will use in place of malloc allocations. Not only does this allow you to set a maximum size for used memory, but it also allows you to set the buffer in memory regions which are not being used and where heap is not implemented. For example, in the STM32H743ZI MCU there are 3 different regions of memory, and only one of them is used for heap and stack memory, leaving the remaining regions unused. 
+The *memsys5* memory allocator allows you to pass a buffer to SQLite to use as its working memory. In this way, SQLite does not use *malloc()* calls. Not only does this allow you to set a maximum size for used memory, but it also allows you to set the buffer in memory regions which are not being used and where heap is not implemented. For example, in the STM32H743ZI MCU there are 3 different regions of memory, and only one of them is used for heap and stack memory, leaving the remaining regions unused. 
 
 The *DEFAULT_PAGE_SIZE*, *DEFAULT_CACHE_SIZE*, *DEFAULT_WAL_AUTOCHECKPOINT*  and MAX_PAGE_COUNT let you control how much resources SQLite consumes. They also have an impact in database performance.
 
@@ -61,7 +61,7 @@ Find the thread safe option and set it to zero
 TCC += -DSQLITE_THREADSAFE=0
 ```
 
-Then set the `OPTS` variable
+Then set the `OPTS` variable with the compile-time options described before.
 
 ```bash
 # Add in any optional parameters specified on the make commane line
@@ -75,7 +75,7 @@ TCC += $(OPTS)
  Build the amalgamation by running:
 
 ```
-make
+make sqlite3.c
 ```
 
 You should now have a `sqlite3.c` and a `sqlite3.h` file.
@@ -117,7 +117,7 @@ SQLITE_API int sqlite3_os_end(){
 }
 ```
 
-Also, the randomness function recurs to *mutex* function which are not available to the STM32. As such, we recommend **commenting out the default implementation of the** `sqlite3_randomness()` function. We provide a simple substitute below, however it would be a good idea to try to adapt the original function avoiding the use of *mutex* operations.
+Also, the randomness function recurs to *mutex* calls which are not available to STM32 devices. As such, we recommend **commenting out the default implementation of the** `sqlite3_randomness()` function. We provide a simple substitute below, however it would be a good idea to try to adapt the original function avoiding the use of *mutex* operations.
 
 ```C++
 SQLITE_API void sqlite3_randomness(int N, void *pBuf){
@@ -129,7 +129,7 @@ SQLITE_API void sqlite3_randomness(int N, void *pBuf){
 
 ### 6. Set wal mode to use heap memory
 
-Shared memory primitives are not available in STM32 devices, so we must force wal mode to use heap memory. We can do so but modifying the `sqlite3WalOpen` function:
+Shared memory primitives are not available in STM32 devices, so we must force wal mode to use heap memory. We can do so by modifying the `sqlite3WalOpen` function:
 
 ```C++ #13
 SQLITE_PRIVATE int sqlite3WalOpen(
@@ -169,7 +169,7 @@ void check_error(int rc, sqlite3 * db){
     }
 }
 
-int test_sqlite3(){
+void test_sqlite3(){
   sqlite3 *db;
   sqlite3_stmt *res;
   int rc;
@@ -177,15 +177,28 @@ int test_sqlite3(){
   uint32_t szBuf = 500400;
   void * pBuf = malloc(szBuf);
 
-  //Initialize underlying 
+  //Initialize underlying
 
   //Enable memsys5 zero-malloc memory allocator
-  sqlite3_config(SQLITE_CONFIG_HEAP, heap_buffer, szBuf, 2);
-  
+  sqlite3_config(SQLITE_CONFIG_HEAP, pBuf, szBuf, 2);
+
   sqlite3_open_v2("helloworld", &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, "littlefs");
 
   rc = sqlite3_exec(db, "PRAGMA journal_mode=WAL", 0, 0, 0);
-  
+
+  check_error(rc, db);
+
+  rc = sqlite3_prepare_v2(db, "SELECT SQLITE_VERSION()", -1, &res, 0);
+  check_error(rc,db);
+
+  rc = sqlite3_step(res);
+
+  if (rc == SQLITE_ROW) {
+    printf("SQLite version: %s\n", sqlite3_column_text(res, 0));
+  } else {
+    check_error(rc,db);
+  }
+
 }
 ```
 
