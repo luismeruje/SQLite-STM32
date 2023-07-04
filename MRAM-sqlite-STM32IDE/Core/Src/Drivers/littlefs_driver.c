@@ -1,9 +1,11 @@
 /*
- * littlefs_driver.c
- *
- *  Created on: 05/05/2023
- *      Author: luisferreira
- */
+Copyright 2023 INESC TEC
+This software is authored by:
+Luís Manuel Meruje Ferreira (INESC TEC) *
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at *
+http://www.apache.org/licenses/LICENSE-2.0 */
 
 #include "lfs.h"
 #include "littlefs_driver.h"
