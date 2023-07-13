@@ -195,7 +195,7 @@ The code needed is already included in the `MRAM-sqlite-STM32IDE` project, needi
 
 First, you must set up your `.ioc` configuration so that you can interface your external storage device. We set our MRAM to be accessible through the FMC at 0xc0000000. Details on FMC usage and configuration can be found in the microcontroller's manual.
 
-It is a good idea to also set your external device as write-through using the Memory Protection Unit (MPU). Since data cache is enabled in this project, the write-through configuration is required to ensure consistency of the database data in case of failure. To do so you must enable the highlighted call belo from the `MRAM-sqlite-STM32IDE/Core/Src/main.c` file, as well as make any necessary adjustments to the `MPU_RegionConfig()` function.
+It is a good idea to also set your external device as write-through using the Memory Protection Unit (MPU). Since data cache is enabled in this project, the write-through configuration is required to ensure consistency of the database data in case of failure. To do so you must enable the highlighted call below from the `MRAM-sqlite-STM32IDE/Core/Src/main.c` file, as well as make any necessary adjustments to the `MPU_RegionConfig()` function.
 
 ```C++
 void MPU_RegionConfig()
